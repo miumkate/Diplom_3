@@ -2,17 +2,12 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.*;
 import prepare.GeneratedData;
 import prepare.ModelUser;
-import prepare.UserApi;
 
 public class LoginTest {
 
@@ -22,14 +17,11 @@ public class LoginTest {
     private ModelUser newUser;
     private BaseMethods baseMethods;
 
-    @BeforeEach
-    public void setup(){
-        baseMethods = new BaseMethods();
-    }
 
     @Step
     @Description("Подготовка драйвера")
     public void prepareDriver(String browser){
+        baseMethods = new BaseMethods();
         BrowserFactory getBrowser = new BrowserFactory();
         driver = getBrowser.getWebDriver(browser);
         driver.manage().window().maximize();

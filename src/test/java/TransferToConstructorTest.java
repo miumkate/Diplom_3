@@ -3,17 +3,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.AccountProfilePage;
 import pages.LoginPage;
 import pages.MainPage;
 import prepare.GeneratedData;
-
-import java.time.Duration;
 
 public class TransferToConstructorTest {
     private WebDriver driver;

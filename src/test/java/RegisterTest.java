@@ -1,20 +1,13 @@
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import pages.LoginPage;
 import pages.RegisterPage;
 import prepare.GeneratedData;
 import prepare.ModelUser;
 import prepare.UserApi;
-
-import java.nio.file.Paths;
 
 public class RegisterTest {
 
