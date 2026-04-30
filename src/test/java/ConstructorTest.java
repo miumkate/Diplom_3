@@ -7,8 +7,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import pages.MainPage;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,16 +14,12 @@ public class ConstructorTest {
 
     private WebDriver driver;
     private MainPage mainPage;
-    private List<String> resultActual;
-    private List<String> resultExpected;
 
     public void setup(){
         mainPage = new MainPage(driver);
         driver.get(mainPage.getUrlMainPage());
         driver.manage().window().maximize();
         mainPage.waitLoading();
-        resultActual = new ArrayList<>();
-        resultExpected = new ArrayList<>();
     }
 
     @AfterEach
@@ -33,76 +27,49 @@ public class ConstructorTest {
         driver.quit();
     }
 
-    static Stream<Arguments> browserList() {
-
+    static Stream<Arguments> ingredientsList() {
         return Stream.of(
-                Arguments.of("chrome"),
-                Arguments.of("yandex")
+                Arguments.of("Булки", "chrome"),
+                Arguments.of("Булки", "yandex"),
+                Arguments.of("Соусы", "chrome"),
+                Arguments.of("Соусы", "yandex"),
+                Arguments.of("Начинки", "chrome"),
+                Arguments.of("Начинки", "yandex")
         );
     }
 
     @ParameterizedTest
-    @MethodSource("browserList")
+    @MethodSource("ingredientsList")
     @Description("Проверка, что работают переходы к разделам")
-    public void ingredientsTest(String browser){
-        WebElement tabNotClickable = null;
-        String parentAttribute;
-        String tabName;
-
-
+    public void ingredientsTest(String ingredientName, String browser){
         BrowserFactory getBrowser = new BrowserFactory();
         driver = getBrowser.getWebDriver(browser);
 
         setup();
 
-        List<WebElement> elementsList = mainPage.getIngredientElementsList();
-        int countTabs = elementsList.size();
+        WebElement tabByName = mainPage.getTabByName(ingredientName);
+        String beforeClickLocation;
+        String afterClickLocation;
 
-        //Перебрать все табы
-        for (WebElement tab : elementsList) {
-            resultExpected.add(tab.getText());
-            parentAttribute = mainPage.getParentAttributeClass(tab);
-            assertNotNull(parentAttribute);
+        beforeClickLocation = mainPage.getPositionScrolledMenu(tabByName.getText());
 
-            // Проверить таб на кликабельность
-            if(parentAttribute.contains("current")){ // Если не кликабельный - сохранить
-                tabNotClickable = tab;
-            }
-            else { // Если кликабельный - кликнуть и получить название таба
-                tabName= mainPage.clickTab(tab);
-                setResultActual(tabName);
-
-            }
+        // Если Tab некликабельный, то надо сделать кликабельным с проверками.
+        if(!mainPage.checkClickable(tabByName)){
+            // * передать TAB, чтобы сделать его доступным для клика
+            mainPage.getTabClickable(tabByName);
         }
 
-        assertNotNull(tabNotClickable);
-        tabName = mainPage.clickTab(tabNotClickable);
-        setResultActual(tabName);
-
-        checkResults(countTabs,resultActual, resultExpected);
+        clickCurrentTab(tabByName);
+        afterClickLocation = mainPage.getPositionScrolledMenu(tabByName.getText());
+        assertNotEquals(beforeClickLocation,afterClickLocation);
     }
 
     @Step
-    @Description("Проверка результата перехода по табам")
-    public void checkResults(int countTabs, List<String> resultActual, List<String> resultExpected){
-
-        assertEquals(countTabs, getResultActual().size(), "Не все элементы проверены");
-
-        for (String element : resultActual) {
-            assertTrue(resultExpected.contains(element));
-        }
-    }
-
-    @Step
-    @Description("Добавление в список проверенного таба")
-    public void setResultActual(String tabName) {
-        resultActual.add(tabName);
-    }
-
-    @Step
-    @Description("Получить список проверенных табов")
-    public List<String> getResultActual(){
-        return resultActual;
+    @Description("Кликнуть на переданный в параметре таб")
+    public void clickCurrentTab(WebElement element){
+        mainPage.clickTab(element);
+        // Проверить, что после клика таб стал некликабельный
+        assertFalse(mainPage.checkClickable(element));
     }
 
 }
